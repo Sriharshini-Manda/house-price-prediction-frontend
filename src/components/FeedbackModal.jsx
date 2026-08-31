@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { X, Star, CheckCircle2, Loader2, MessageSquarePlus } from 'lucide-react';
+import { X, Star, CheckCircle2, Loader2, MessageSquarePlus, AlertCircle } from 'lucide-react';
 import { submitFeedback } from '../services/api';
 
 export default function FeedbackModal({ isOpen, onClose, predictionId }) {
   const [actualPrice, setActualPrice] = useState('');
   const [rating, setRating] = useState(5);
   const [comments, setComments] = useState('');
+  const [validationError, setValidationError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -13,11 +14,19 @@ export default function FeedbackModal({ isOpen, onClose, predictionId }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setValidationError(null);
+
+    const priceNum = Number(actualPrice);
+    if (!actualPrice || isNaN(priceNum) || priceNum <= 0) {
+      setValidationError('Please enter a valid positive sold price in INR.');
+      return;
+    }
+
     setIsSubmitting(true);
     try {
       await submitFeedback({
         prediction_id: predictionId || 'pred_sample',
-        actual_price: actualPrice ? Number(actualPrice) : 0,
+        actual_price: priceNum,
         rating,
         comments,
       });
@@ -28,6 +37,7 @@ export default function FeedbackModal({ isOpen, onClose, predictionId }) {
       }, 1800);
     } catch (err) {
       console.error('Failed to submit feedback:', err);
+      setValidationError('Failed to log feedback to backend server. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -57,14 +67,21 @@ export default function FeedbackModal({ isOpen, onClose, predictionId }) {
               </div>
               <div>
                 <h3 className="text-base font-bold text-white">Submit Real-World Feedback</h3>
-                <p className="text-xs text-gray-400">Help tune model accuracy for prediction ID: <span className="font-mono text-gray-300">{predictionId?.slice(0, 8)}...</span></p>
+                <p className="text-xs text-gray-400">Help tune model accuracy for prediction ID: <span className="font-mono text-gray-300">{predictionId ? `${predictionId.slice(0, 8)}...` : 'Sample'}</span></p>
               </div>
             </div>
+
+            {validationError && (
+              <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                <span>{validationError}</span>
+              </div>
+            )}
 
             {/* Actual Price Input */}
             <div>
               <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                Actual Sold Price (INR)
+                Actual Sold Price (INR) <span className="text-rose-400">*</span>
               </label>
               <input
                 type="number"
@@ -72,6 +89,8 @@ export default function FeedbackModal({ isOpen, onClose, predictionId }) {
                 value={actualPrice}
                 onChange={(e) => setActualPrice(e.target.value)}
                 className="w-full px-4 py-2.5 rounded-xl glass-input text-sm text-gray-100"
+                min={1}
+                required
               />
             </div>
 

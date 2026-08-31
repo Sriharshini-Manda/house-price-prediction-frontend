@@ -4,12 +4,18 @@ import { MapPin, Maximize2, BedDouble, Bath, Calendar, Home, CheckCircle2, Loade
 export default function PredictionForm({ formData, setFormData, metadata, onSubmit, isLoading }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === 'total_sqft' || name === 'bhk' || name === 'bathrooms' || name === 'property_age_years'
-        ? Number(value)
-        : value,
-    }));
+    if (name === 'total_sqft' || name === 'bhk' || name === 'bathrooms' || name === 'property_age_years') {
+      const parsed = Number(value);
+      setFormData((prev) => ({
+        ...prev,
+        [name]: isNaN(parsed) ? prev[name] : parsed,
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const locations = metadata?.locations || [

@@ -1,17 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { History, Search, MapPin, Calendar, ArrowUpDown, Filter, Loader2, Database } from 'lucide-react';
+import { History, Search, MapPin, Calendar, ArrowUpDown, Filter, Loader2, Database, AlertCircle } from 'lucide-react';
 import { getHistory } from '../services/api';
 
 export default function HistoryDashboard({ metadata }) {
   const [historyItems, setHistoryItems] = useState([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [locationFilter, setLocationFilter] = useState('');
   const [limit] = useState(15);
   const [skip, setSkip] = useState(0);
 
   const fetchHistoryData = async () => {
     setIsLoading(true);
+    setFetchError(null);
     try {
       const params = { limit, skip };
       if (locationFilter) params.location = locationFilter;
@@ -20,6 +22,7 @@ export default function HistoryDashboard({ metadata }) {
       setTotal(data.total || 0);
     } catch (err) {
       console.error('Failed to fetch prediction history:', err);
+      setFetchError('Unable to connect to MongoDB Atlas history database. Verify backend service is running.');
     } finally {
       setIsLoading(false);
     }
@@ -88,6 +91,22 @@ export default function HistoryDashboard({ metadata }) {
           </button>
         </div>
       </div>
+
+      {/* Network Error Alert */}
+      {fetchError && (
+        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs flex items-center justify-between">
+          <div className="flex items-center space-x-2">
+            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <span>{fetchError}</span>
+          </div>
+          <button
+            onClick={fetchHistoryData}
+            className="px-3 py-1 rounded-lg bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 border border-rose-500/40 text-xs font-medium"
+          >
+            Retry Connection
+          </button>
+        </div>
+      )}
 
       {/* History Table */}
       {isLoading ? (
