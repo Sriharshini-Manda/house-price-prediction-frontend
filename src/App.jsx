@@ -11,6 +11,7 @@ import { Building2, Sparkles, AlertCircle } from 'lucide-react';
 export default function App() {
   const [activeTab, setActiveTab] = useState('predict');
   const [metadata, setMetadata] = useState(null);
+  const [connectionState, setConnectionState] = useState('waking_up'); // 'waking_up' | 'connected' | 'failed'
   const [isBackendConnected, setIsBackendConnected] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [prediction, setPrediction] = useState(null);
@@ -27,27 +28,54 @@ export default function App() {
     furnishing_status: 'Semi-Furnished',
   });
 
-  // Fetch metadata on mount
+  // On-Demand wake-up polling loop on mount (handles dormant Render cold start)
   useEffect(() => {
-    const fetchMetadataOnLoad = async () => {
-      try {
-        const data = await getMetadata();
-        setMetadata(data);
-        setIsBackendConnected(true);
-        if (data.locations && data.locations.length > 0) {
-          setFormData((prev) => ({ ...prev, location: data.locations[0] }));
+    let isMounted = true;
+    let attempts = 0;
+    const maxAttempts = 12; // 12 attempts * 5s = 60s total window
+    const intervalMs = 5000;
+
+    const attemptConnection = async () => {
+      while (isMounted && attempts < maxAttempts) {
+        attempts++;
+        try {
+          const data = await getMetadata();
+          if (!isMounted) return;
+          setMetadata(data);
+          setConnectionState('connected');
+          setIsBackendConnected(true);
+          setApiError((prev) => (prev && prev.includes('waking up') ? null : prev));
+          if (data.locations && data.locations.length > 0) {
+            setFormData((prev) => ({ ...prev, location: data.locations[0] }));
+          }
+          return; // Connected successfully!
+        } catch (err) {
+          console.warn(`Backend connection attempt ${attempts}/${maxAttempts} pending:`, err?.message || err);
+          if (attempts >= maxAttempts) {
+            if (isMounted) {
+              setConnectionState('failed');
+              setIsBackendConnected(false);
+            }
+            return;
+          }
+          await new Promise((res) => setTimeout(res, intervalMs));
         }
-      } catch (err) {
-        console.warn('Backend API connection check failed:', err);
-        setIsBackendConnected(false);
       }
     };
 
-    fetchMetadataOnLoad();
+    attemptConnection();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handlePredictSubmit = async (e) => {
     e.preventDefault();
+    if (connectionState === 'waking_up') {
+      setApiError('The cloud backend is currently waking up from cold start (~30-40s). Please wait a few moments...');
+      return;
+    }
     setIsLoading(true);
     setApiError(null);
     try {
@@ -68,6 +96,7 @@ export default function App() {
         activeTab={activeTab}
         setActiveTab={setActiveTab}
         isBackendConnected={isBackendConnected}
+        connectionState={connectionState}
       />
 
       {/* Main Container */}
@@ -101,7 +130,7 @@ export default function App() {
               />
             </div>
 
-            <div className="lg:col-span-5 sticky top-24">
+            <div className="lg:col-span-5 sticky top-24 max-h-[calc(100vh-7rem)] overflow-y-auto">
               <ResultCard
                 prediction={prediction}
                 formData={formData}

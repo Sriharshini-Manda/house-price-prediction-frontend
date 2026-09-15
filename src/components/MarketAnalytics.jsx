@@ -55,7 +55,7 @@ export default function MarketAnalytics() {
           </p>
         </div>
 
-        <div className="flex items-center space-x-4 bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+        <div className="flex items-center space-x-3 sm:space-x-4 bg-gray-900/60 p-3 sm:p-4 rounded-xl border border-gray-800 shrink-0">
           <div>
             <span className="text-[10px] text-gray-400 uppercase tracking-wider block font-semibold">Model Metric</span>
             <span className="text-lg font-extrabold text-blue-400">R² = 0.9684</span>

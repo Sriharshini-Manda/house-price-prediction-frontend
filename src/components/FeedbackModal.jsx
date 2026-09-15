@@ -45,7 +45,7 @@ export default function FeedbackModal({ isOpen, onClose, predictionId }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200">
-      <div className="glass-panel w-full max-w-md rounded-2xl p-6 border border-gray-800 shadow-2xl relative">
+      <div className="glass-panel w-full max-w-md max-h-[90vh] overflow-y-auto rounded-2xl p-6 border border-gray-800 shadow-2xl relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-gray-800 transition"

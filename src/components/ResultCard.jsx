@@ -56,16 +56,16 @@ export default function ResultCard({ prediction, formData, onOpenFeedback, onRes
         <span className="text-xs font-semibold uppercase tracking-widest text-gray-400 block mb-1">
           Estimated Valuation
         </span>
-        <h1 className="text-4xl sm:text-5xl font-extrabold gradient-text tracking-tight my-2">
+        <h1 className="text-3xl xs:text-4xl sm:text-5xl font-extrabold gradient-text tracking-tight my-2 break-words">
           {formatted_price}
         </h1>
-        <p className="text-xs text-gray-400 font-mono mt-1">
+        <p className="text-xs text-gray-400 font-mono mt-1 break-all">
           Exact Estimate: ₹ {estimated_price?.toLocaleString('en-IN')} INR
         </p>
       </div>
 
       {/* Metric Badges Grid */}
-      <div className="grid grid-cols-2 gap-3 my-6">
+      <div className="grid grid-cols-1 min-[380px]:grid-cols-2 gap-3 my-6">
         <div className="p-3.5 rounded-xl bg-gray-900/80 border border-gray-800/80 flex flex-col">
           <span className="text-[10px] text-gray-400 uppercase font-semibold flex items-center gap-1">
             <Tag className="w-3 h-3 text-purple-400" /> Price / Sq.Ft

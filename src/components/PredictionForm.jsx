@@ -111,13 +111,13 @@ export default function PredictionForm({ formData, setFormData, metadata, onSubm
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <BedDouble className="w-3.5 h-3.5 text-indigo-400" /> Bedrooms (BHK)
             </label>
-            <div className="flex space-x-2">
+            <div className="grid grid-cols-5 gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((num) => (
                 <button
                   type="button"
                   key={num}
                   onClick={() => setFormData((prev) => ({ ...prev, bhk: num }))}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`py-2 sm:py-2.5 px-0.5 sm:px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-center ${
                     formData.bhk === num
                       ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/30 ring-2 ring-blue-400'
                       : 'bg-gray-900/60 text-gray-400 border border-gray-800 hover:bg-gray-800 hover:text-gray-200'
@@ -134,13 +134,13 @@ export default function PredictionForm({ formData, setFormData, metadata, onSubm
             <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
               <Bath className="w-3.5 h-3.5 text-cyan-400" /> Bathrooms
             </label>
-            <div className="flex space-x-2">
+            <div className="grid grid-cols-5 gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((num) => (
                 <button
                   type="button"
                   key={num}
                   onClick={() => setFormData((prev) => ({ ...prev, bathrooms: num }))}
-                  className={`flex-1 py-2.5 rounded-xl text-xs font-bold transition-all ${
+                  className={`py-2 sm:py-2.5 px-0.5 sm:px-2 rounded-xl text-[10px] sm:text-xs font-bold transition-all text-center ${
                     formData.bathrooms === num
                       ? 'bg-cyan-600 text-white shadow-lg shadow-cyan-500/30 ring-2 ring-cyan-400'
                       : 'bg-gray-900/60 text-gray-400 border border-gray-800 hover:bg-gray-800 hover:text-gray-200'
@@ -158,20 +158,20 @@ export default function PredictionForm({ formData, setFormData, metadata, onSubm
           <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2 flex items-center gap-1.5">
             <Home className="w-3.5 h-3.5 text-pink-400" /> Property Type
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-2">
             {propertyTypes.map((type) => (
               <button
                 type="button"
                 key={type}
                 onClick={() => setFormData((prev) => ({ ...prev, property_type: type }))}
-                className={`py-2.5 px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                className={`py-2.5 px-2 sm:px-3 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all truncate ${
                   formData.property_type === type
                     ? 'bg-purple-600/30 border border-purple-500 text-purple-300 shadow-md shadow-purple-500/20'
                     : 'bg-gray-900/60 text-gray-400 border border-gray-800 hover:bg-gray-800'
                 }`}
               >
-                {formData.property_type === type && <CheckCircle2 className="w-3.5 h-3.5 text-purple-400" />}
-                {type}
+                {formData.property_type === type && <CheckCircle2 className="w-3.5 h-3.5 text-purple-400 shrink-0" />}
+                <span className="truncate">{type}</span>
               </button>
             ))}
           </div>
@@ -182,19 +182,19 @@ export default function PredictionForm({ formData, setFormData, metadata, onSubm
           <label className="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
             Furnishing Status
           </label>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-1 min-[420px]:grid-cols-3 gap-2">
             {furnishingStatuses.map((status) => (
               <button
                 type="button"
                 key={status}
                 onClick={() => setFormData((prev) => ({ ...prev, furnishing_status: status }))}
-                className={`py-2 px-3 rounded-xl text-xs font-medium transition-all ${
+                className={`py-2 px-2 sm:px-3 rounded-xl text-xs font-medium transition-all truncate ${
                   formData.furnishing_status === status
                     ? 'bg-blue-600/20 border border-blue-500/50 text-blue-300'
                     : 'bg-gray-900/60 text-gray-400 border border-gray-800 hover:bg-gray-800'
                 }`}
               >
-                {status}
+                <span className="truncate">{status}</span>
               </button>
             ))}
           </div>
